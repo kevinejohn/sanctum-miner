@@ -21,6 +21,7 @@ const address = bsv.Address.fromPrivKey(bsv.PrivKey.fromString(key));
 
 const DIFFICULTY = 8192;
 const NONCE1 = '00';
+const NONCE2 = 'deadbeefdeadbeef';
 
 // const server = rpc.Server.$create();
 // server.on('error', function (err) {
@@ -70,7 +71,7 @@ function sendMessage(obj, client) {
 }
 
 function submitBlock(params) {
-  const [worker, id, extraNonce, time, nonce] = params;
+  const [worker, id, extraNonce, time, nonce, versionMiner] = params;
   // console.log(
   //   'PARAMSSS SUBMITBLOCK',
   //   coinbases[id].indexOf('aaaaaaaaaaaaaaaaaaffffffff'),
@@ -85,7 +86,17 @@ function submitBlock(params) {
   //   // Buffer.from(extraNonce, 'hex').reverse().toString('hex')
   // );
   // console.log('BEFORE', prevHashes[id].coinbase, 'after', coinbase);
-  const { prevhash, nBits, version, coinbase1, coinbase2 } = prevHashes[id];
+  // console.log('prev!!!!!!!!!!!', prevHashes[id]);
+  let { prevhash, nBits, version, merkleProof, coinbase1, coinbase2 } =
+    prevHashes[id];
+
+  if (versionMiner) {
+    version = versionMiner
+      .match(/.{1,2}/g)
+      .reverse()
+      .join('');
+    console.log('Using versionMiner', versionMiner);
+  }
 
   const tx = bsvMin.Transaction.fromBuffer(
     Buffer.concat([
@@ -104,8 +115,15 @@ function submitBlock(params) {
     time: parseInt(time, 16),
     version: parseInt(version, 16),
     coinbase: tx.toBuffer().toString('hex'),
+    version: parseInt(version, 16),
   };
   // if (version2) solution.version = parseInt(version2, 16);
+
+  const MerkleTree = require('../merkle');
+  var test = new MerkleTree([]);
+  // console.log('steps', test);
+  test.steps = merkleProof.map((m) => Buffer.from(m, 'hex'));
+  merkle = test.withFirst(Buffer.from(tx.getHash()).reverse()).toString('hex');
 
   const bw = new bsvMin.utils.BufferWriter();
   // if (version) {
@@ -113,15 +131,26 @@ function submitBlock(params) {
   // } else {
   //   bw.writeUInt32LE(version);
   // }
-  bw.write(Buffer.from(version, 'hex'));
-  bw.write(Buffer.from(prevhash, 'hex'));
-  bw.writeReverse(Buffer.from(tx.getHash()));
+  // bw.writeReverse(
+  //   Buffer.from(
+  //     version
+  //       .match(/.{1,4}/g)
+  //       .reverse()
+  //       .join(''),
+  //     'hex'
+  //   )
+  // );
+  bw.writeReverse(Buffer.from(version, 'hex'));
+  bw.writeReverse(Buffer.from(prevhash, 'hex'));
+  bw.write(Buffer.from(merkle, 'hex'));
   // bw.writeUInt32LE(parseInt(time, 16));
   bw.writeReverse(Buffer.from(time, 'hex'));
   bw.writeReverse(Buffer.from(nBits, 'hex'));
   bw.writeReverse(Buffer.from(nonce, 'hex'));
   // bw.writeUInt32LE(parseInt(nonce, 16));
-  const header = bsvMin.Header.fromBuffer(bw.toBuffer());
+  const bufHeader = bw.toBuffer();
+  if (bufHeader.length !== 80) throw new Error(`Invalid header size`);
+  const header = bsvMin.Header.fromBuffer(bufHeader);
 
   // const bw = new bsv.utils.BufferWriter();
   // // bw.write(Buffer.from(version, 'hex'));
@@ -184,14 +213,16 @@ function submitBlock(params) {
       );
       fs.appendFile(
         './foundblock.txt',
-        `FOUND BLOCK at ${+new Date()}: ${JSON.stringify(solution)}`
+        `FOUND BLOCK (${result}) at ${+new Date()}: ${JSON.stringify(
+          solution
+        )}\n`
       );
     }
     if (err) {
       console.log(`!!!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!!!!!!!!`, err);
       fs.appendFile(
         './foundblock.txt',
-        `ERROR at ${+new Date()}: ${JSON.stringify(err)}`
+        `ERROR (${result}) at ${+new Date()}: ${JSON.stringify(err)}\n`
       );
     }
   });
@@ -204,13 +235,10 @@ function getCoinbase(client) {
 
       const script = new bsv.Script();
       script.writeBuffer(bsv.Bn(result.height).toBuffer().reverse());
-      // script.writeBuffer(Buffer.from('/symbols/'));
+      script.writeBuffer(Buffer.from('/sanctum/'));
       // script.writeBuffer(Buffer.from('aadeadbeefdeadbeef', 'hex'));
       script.writeBuffer(
-        Buffer.concat([
-          Buffer.from(NONCE1, 'hex'),
-          Buffer.from('deadbeef', 'hex'),
-        ])
+        Buffer.concat([Buffer.from(NONCE1, 'hex'), Buffer.from(NONCE2, 'hex')])
       );
 
       const txb = new bsv.TxBuilder();
@@ -236,7 +264,7 @@ function getCoinbase(client) {
       // coinbases[result.id] = tx;
 
       // const split = tx.split('aadeadbeefdeadbeef');
-      const split = tx.split(`${NONCE1}deadbeef`);
+      const split = tx.split(`${NONCE1}${NONCE2}`);
       if (split.length !== 2) throw new Error('Error splitting coinbase');
       const coinbase1 = split[0];
       const coinbase2 = split[1];
@@ -249,28 +277,38 @@ function getCoinbase(client) {
       //   result
       // );
 
-      // const bw1 = new bsvMin.utils.BufferWriter();
-      // bw1.writeUInt32LE(result.version);
-      // const version = bw1.toBuffer().toString('hex');
-      const version = '00000000';
+      const bw1 = new bsvMin.utils.BufferWriter();
+      bw1.writeUInt32BE(result.version);
+      const version = bw1.toBuffer().toString('hex');
+      // const version = '00000000';
 
-      // const nBits = Buffer.from(result.nBits, 'hex').reverse().toString('hex');
+      const nBits = result.nBits; // Buffer.from(result.nBits, 'hex').reverse().toString('hex');
       // const nBits = '00004000'; // TODO: FIX!
 
-      const bw2 = new bsvMin.utils.BufferWriter();
-      // bw2.writeUInt32LE(result.nBits);
-      bw2.writeUInt32LE(DIFFICULTY);
-      const nBits = bw2.toBuffer().toString('hex');
+      // const bw2 = new bsvMin.utils.BufferWriter();
+      // // bw2.writeUInt32LE(result.nBits);
+      // bw2.writeUInt32LE(DIFFICULTY);
+      // const nBits = bw2.toBuffer().toString('hex');
 
-      // const bw3 = new bsvMin.utils.BufferWriter();
-      // bw3.writeUInt32LE(result.time);
-      // const time = bw3.toBuffer().toString('hex');
-      const time = '00000000';
+      const bw3 = new bsvMin.utils.BufferWriter();
+      bw3.writeUInt32BE(result.time);
+      const time = bw3.toBuffer().toString('hex');
+      // const time = '00000000';
 
+      // const prevhash = Buffer.from(result.prevhash, 'hex').toString('hex');
+      //   .reverse()
+      //   .toString('hex');
+      // const prevhash = Buffer.alloc(32).toString('hex');
       // const prevhash = Buffer.from(result.prevhash, 'hex')
       //   .reverse()
       //   .toString('hex');
-      const prevhash = Buffer.alloc(32).toString('hex');
+      // const prevhash =
+      //   '1111111111111111111111111111111100000000000000000000000000000000';
+      // const prevhash =
+      // '6666666655555555111111111111111122222222222222223333333333333333';
+      // 0000000000000000111111111111111122222222222222223333333333333333
+      const prevhash = result.prevhash;
+      const merkleProof = result.merkleProof;
 
       prevHashes[result.id] = {
         prevhash,
@@ -278,18 +316,26 @@ function getCoinbase(client) {
         version,
         coinbase1,
         coinbase2,
+        merkleProof,
       };
 
       const params = [
         result.id,
-        prevhash,
+        // prevhash,
+        prevhash
+          .match(/.{1,8}/g)
+          .reverse()
+          .join(''),
         coinbase1,
         coinbase2,
-        // result.merkleProof,
-        [],
-        Buffer.from(version, 'hex').toString('hex'),
-        Buffer.from(nBits, 'hex').toString('hex'),
-        Buffer.from(time, 'hex').toString('hex'),
+        result.merkleProof,
+        // [],
+        version,
+        nBits,
+        time,
+        // Buffer.from(version, 'hex').toString('hex'),
+        // Buffer.from(nBits, 'hex').toString('hex'),
+        // Buffer.from(time, 'hex').toString('hex'),
         true, // TODO: Turn to false
       ];
       console.log('sending to S9', params);
@@ -326,7 +372,7 @@ async function processMessage(data, client) {
               ['mining.notify', '00'],
             ],
             NONCE1,
-            4,
+            NONCE2.length / 2,
           ],
           error: null,
         },
@@ -354,26 +400,40 @@ async function processMessage(data, client) {
       );
     } else if (method === 'mining.configure') {
       console.log(method, params);
-      sendMessage(
-        {
-          id,
-          result: {
-            'version-rolling': false,
-            // 'version-rolling.mask': '00c00000',
+      if (true) {
+        sendMessage(
+          {
+            id,
+            result: {
+              'version-rolling': false,
+              // 'version-rolling.mask': '00c00000',
+            },
+            error: null,
           },
-          error: null,
-        },
-        client
-      );
-      // sendMessage(
-      //   {
-      //     id: null,
-      //     method: 'mining.set_version_mask',
-      //     params: ['00c00000'],
-      //     error: null,
-      //   },
-      //   client
-      // );
+          client
+        );
+      } else {
+        sendMessage(
+          {
+            id,
+            result: {
+              'version-rolling': true,
+              'version-rolling.mask': '00c00000',
+            },
+            error: null,
+          },
+          client
+        );
+        sendMessage(
+          {
+            id: null,
+            method: 'mining.set_version_mask',
+            params: ['00c00000'],
+            error: null,
+          },
+          client
+        );
+      }
     } else if (method === 'mining.submit') {
       submitBlock(params);
       sendMessage(
