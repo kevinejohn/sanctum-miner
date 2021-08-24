@@ -22,6 +22,8 @@ const address = bsv.Address.fromPrivKey(bsv.PrivKey.fromString(key));
 const DIFFICULTY = 8192;
 const NONCE1 = '00';
 const NONCE2 = 'deadbeefdeadbeef';
+const ASIC_MASK = '00c00000';
+const ASIC_BOOST = true;
 
 // const server = rpc.Server.$create();
 // server.on('error', function (err) {
@@ -91,11 +93,15 @@ function submitBlock(params) {
     prevHashes[id];
 
   if (versionMiner) {
-    version = versionMiner
-      .match(/.{1,2}/g)
-      .reverse()
-      .join('');
-    console.log('Using versionMiner', versionMiner);
+    const last_mask = parseInt(ASIC_MASK, 16);
+    const version_bits = parseInt(versionMiner, 16);
+    const job_version = parseInt(version, 16);
+
+    version = (job_version & ~last_mask) | (version_bits & last_mask);
+    const bw1 = new bsvMin.utils.BufferWriter();
+    bw1.writeUInt32BE(version);
+    version = bw1.toBuffer().toString('hex');
+    // console.log('!!!!!!!!!!!!Using version', version);
   }
 
   const tx = bsvMin.Transaction.fromBuffer(
@@ -119,11 +125,16 @@ function submitBlock(params) {
   };
   // if (version2) solution.version = parseInt(version2, 16);
 
-  const MerkleTree = require('../merkle');
-  var test = new MerkleTree([]);
+  // const MerkleTree = require('../merkle');
+  // var test = new MerkleTree([]);
   // console.log('steps', test);
-  test.steps = merkleProof.map((m) => Buffer.from(m, 'hex'));
-  merkle = test.withFirst(Buffer.from(tx.getHash()).reverse()).toString('hex');
+  let merkle = Buffer.from(tx.getHash()).reverse();
+  merkleProof.map((m) => {
+    merkle = bsvMin.utils.Hash.sha256sha256(
+      Buffer.concat([merkle, Buffer.from(m, 'hex')])
+    );
+  });
+  // merkle = test.withFirst().toString('hex');
 
   const bw = new bsvMin.utils.BufferWriter();
   // if (version) {
@@ -142,7 +153,7 @@ function submitBlock(params) {
   // );
   bw.writeReverse(Buffer.from(version, 'hex'));
   bw.writeReverse(Buffer.from(prevhash, 'hex'));
-  bw.write(Buffer.from(merkle, 'hex'));
+  bw.write(merkle);
   // bw.writeUInt32LE(parseInt(time, 16));
   bw.writeReverse(Buffer.from(time, 'hex'));
   bw.writeReverse(Buffer.from(nBits, 'hex'));
@@ -400,25 +411,13 @@ async function processMessage(data, client) {
       );
     } else if (method === 'mining.configure') {
       console.log(method, params);
-      if (true) {
-        sendMessage(
-          {
-            id,
-            result: {
-              'version-rolling': false,
-              // 'version-rolling.mask': '00c00000',
-            },
-            error: null,
-          },
-          client
-        );
-      } else {
+      if (ASIC_BOOST) {
         sendMessage(
           {
             id,
             result: {
               'version-rolling': true,
-              'version-rolling.mask': '00c00000',
+              'version-rolling.mask': ASIC_MASK,
             },
             error: null,
           },
@@ -428,7 +427,19 @@ async function processMessage(data, client) {
           {
             id: null,
             method: 'mining.set_version_mask',
-            params: ['00c00000'],
+            params: [ASIC_MASK],
+            error: null,
+          },
+          client
+        );
+      } else {
+        sendMessage(
+          {
+            id,
+            result: {
+              'version-rolling': false,
+              // 'version-rolling.mask': '00c00000',
+            },
             error: null,
           },
           client
