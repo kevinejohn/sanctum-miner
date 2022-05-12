@@ -19,6 +19,11 @@ node.call('getminingcandidate', [true], (err, result) => {
 const key = 'L46kZSgkMthst5Nwq3GnvUwwaWAWE8TaoTGejd3LtFAYSkmKJnjy';
 const address = bsv.Address.fromPrivKey(bsv.PrivKey.fromString(key));
 
+// Faucet key
+// cRG2bUHFvbL4Epa5b2PyB82dxL7nMW6iPteTWd5DtHskVxCWgz3z
+// msEJ1kmWr4A5V3qxJ6eM4xLoAL5pGX1wGC
+// https://classic-test.whatsonchain.com/block-height/1444828
+
 const DIFFICULTY = 8192;
 const NONCE1 = '00';
 const NONCE2 = 'deadbeefdeadbeef';

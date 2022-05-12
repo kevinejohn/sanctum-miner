@@ -1,0 +1,185 @@
+    [Symbol(owner_symbol)]: [Circular *2]
+  },
+  [Symbol(kSetNoDelay)]: false,
+  [Symbol(lastWriteQueueSize)]: 0,
+  [Symbol(timeout)]: null,
+  [Symbol(kBuffer)]: null,
+  [Symbol(kBufferCb)]: null,
+  [Symbol(kBufferGen)]: null,
+  [Symbol(kCapture)]: false,
+  [Symbol(kBytesRead)]: 0,
+  [Symbol(kBytesWritten)]: 0
+}
+Client data <Buffer 7b 22 69 64 22 3a 20 31 2c 20 22 6d 65 74 68 6f 64 22 3a 20 22 6d 69 6e 69 6e 67 2e 73 75 62 73 63 72 69 62 65 22 2c 20 22 70 61 72 61 6d 73 22 3a 20 ... 38 more bytes> {"id": 1, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000"]}
+
+^C
+jk@KJs-MacBook-Pro miner-pool % node examples/server.js
+Function:  Created server
+Function:  Listening on port 3333
+Listening on port 3333
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+^C
+jk@KJs-MacBook-Pro miner-pool % node examples/server.js
+Function:  Created server
+Function:  Listening on port 3333
+Listening on port 3333
+Function:  (db396878-4a6b-4468-8390-99478849b8f9) New connection
+Function:  (db396878-4a6b-4468-8390-99478849b8f9) Received command {"id": 0, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000"]}
+on mining subscribe [ 'bmminer/2.0.0/Antminer S9i/14000' ]
+Client is asking for subscription!
+Function:  TypeError: (intermediate value).spread is not a function
+    at serverForEachCommand (/Users/jk/projects/miner-pool/src/server.js:373:18)
+    at arrayEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:530:11)
+    at Function.forEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:9410:14)
+    at Server.processCommands (/Users/jk/projects/miner-pool/src/server.js:331:7)
+    at Server.handleData (/Users/jk/projects/miner-pool/src/server.js:166:30)
+    at Socket.handleData (/Users/jk/projects/miner-pool/src/server.js:129:16)
+    at Socket.emit (node:events:327:20)
+    at addChunk (node:internal/streams/readable:304:12)
+    at readableAddChunk (node:internal/streams/readable:279:9)
+    at Socket.Readable.push (node:internal/streams/readable:218:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:192:23)
+Mining error:  TypeError: (intermediate value).spread is not a function
+Function:  (db396878-4a6b-4468-8390-99478849b8f9) Closed connection 0 connections
+^C
+jk@KJs-MacBook-Pro miner-pool % node examples/server.js
+Function:  Created server
+Function:  Listening on port 3333
+Listening on port 3333
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) New connection
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Received command {"id": 1, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000"]}
+on mining subscribe [ 'bmminer/2.0.0/Antminer S9i/14000' ]
+Client is asking for subscription!
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Sent command {"id":1,"result":[[["mining.set_difficulty","b4b6693b72a50c7116db18d6497cac52"],["mining.notify","ae6812eb4cd7735a302a8a9dd95cf71f"]],"08000002",4],"error":null}
+
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Received command {"id": 2, "method": "mining.authorize", "params": ["akaminer1.001", "123"]}
+on mining authorize [ 'akaminer1.001', '123' ]
+Authorizing worker akaminer1.001
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Sent command {"id":2,"result":true,"error":null}
+
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Received command {"id":3, "method":"mining.configure", "params":[["version-rolling"],{"version-rolling.mask":"00c00000","version-rolling.min-bit-count":2}]}
+Function:  Stratum error: -3,Method not found,
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Sent command {"id":3,"error":[-3,"Method not found",null],"result":null}
+
+Function:  Error: Method not found "configure"
+    at serverForEachCommand (/Users/jk/projects/miner-pool/src/server.js:391:19)
+    at arrayEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:530:11)
+    at Function.forEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:9410:14)
+    at Server.processCommands (/Users/jk/projects/miner-pool/src/server.js:331:7)
+    at Server.handleData (/Users/jk/projects/miner-pool/src/server.js:166:30)
+    at Socket.handleData (/Users/jk/projects/miner-pool/src/server.js:129:16)
+    at Socket.emit (node:events:327:20)
+    at addChunk (node:internal/streams/readable:304:12)
+    at readableAddChunk (node:internal/streams/readable:279:9)
+    at Socket.Readable.push (node:internal/streams/readable:218:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:192:23)
+Mining error:  Error: Method not found "configure"
+Function:  (839c91ff-99f7-4511-bbd6-6fcd6061bcfb) Closed connection 0 connections
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) New connection
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Received command {"id": 4, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000", "ae6812eb4cd7735a302a8a9dd95cf71f"]}
+on mining subscribe [
+  'bmminer/2.0.0/Antminer S9i/14000',
+  'ae6812eb4cd7735a302a8a9dd95cf71f'
+]
+Client is asking for subscription!
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Sent command {"id":4,"result":[[["mining.set_difficulty","b4b6693b72a50c7116db18d6497cac52"],["mining.notify","ae6812eb4cd7735a302a8a9dd95cf71f"]],"08000002",4],"error":null}
+
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Received command {"id": 5, "method": "mining.authorize", "params": ["akaminer1.001", "123"]}
+on mining authorize [ 'akaminer1.001', '123' ]
+Authorizing worker akaminer1.001
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Sent command {"id":5,"result":true,"error":null}
+
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Received command {"id":6, "method":"mining.configure", "params":[["version-rolling"],{"version-rolling.mask":"00c00000","version-rolling.min-bit-count":2}]}
+Function:  Stratum error: -3,Method not found,
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Sent command {"id":6,"error":[-3,"Method not found",null],"result":null}
+
+Function:  Error: Method not found "configure"
+    at serverForEachCommand (/Users/jk/projects/miner-pool/src/server.js:391:19)
+    at arrayEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:530:11)
+    at Function.forEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:9410:14)
+    at Server.processCommands (/Users/jk/projects/miner-pool/src/server.js:331:7)
+    at Server.handleData (/Users/jk/projects/miner-pool/src/server.js:166:30)
+    at Socket.handleData (/Users/jk/projects/miner-pool/src/server.js:129:16)
+    at Socket.emit (node:events:327:20)
+    at addChunk (node:internal/streams/readable:304:12)
+    at readableAddChunk (node:internal/streams/readable:279:9)
+    at Socket.Readable.push (node:internal/streams/readable:218:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:192:23)
+Mining error:  Error: Method not found "configure"
+Function:  (bf715f97-0c1d-4698-91bf-df49480ffcad) Closed connection 0 connections
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) New connection
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Received command {"id": 7, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000", "ae6812eb4cd7735a302a8a9dd95cf71f"]}
+on mining subscribe [
+  'bmminer/2.0.0/Antminer S9i/14000',
+  'ae6812eb4cd7735a302a8a9dd95cf71f'
+]
+Client is asking for subscription!
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Sent command {"id":7,"result":[[["mining.set_difficulty","b4b6693b72a50c7116db18d6497cac52"],["mining.notify","ae6812eb4cd7735a302a8a9dd95cf71f"]],"08000002",4],"error":null}
+
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Received command {"id": 8, "method": "mining.authorize", "params": ["akaminer1.001", "123"]}
+on mining authorize [ 'akaminer1.001', '123' ]
+Authorizing worker akaminer1.001
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Sent command {"id":8,"result":true,"error":null}
+
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Received command {"id":9, "method":"mining.configure", "params":[["version-rolling"],{"version-rolling.mask":"00c00000","version-rolling.min-bit-count":2}]}
+Function:  Stratum error: -3,Method not found,
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Sent command {"id":9,"error":[-3,"Method not found",null],"result":null}
+
+Function:  Error: Method not found "configure"
+    at serverForEachCommand (/Users/jk/projects/miner-pool/src/server.js:391:19)
+    at arrayEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:530:11)
+    at Function.forEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:9410:14)
+    at Server.processCommands (/Users/jk/projects/miner-pool/src/server.js:331:7)
+    at Server.handleData (/Users/jk/projects/miner-pool/src/server.js:166:30)
+    at Socket.handleData (/Users/jk/projects/miner-pool/src/server.js:129:16)
+    at Socket.emit (node:events:327:20)
+    at addChunk (node:internal/streams/readable:304:12)
+    at readableAddChunk (node:internal/streams/readable:279:9)
+    at Socket.Readable.push (node:internal/streams/readable:218:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:192:23)
+Mining error:  Error: Method not found "configure"
+Function:  (11c30b6a-325b-415d-bd29-66e5772d91d5) Closed connection 0 connections
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) New connection
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Received command {"id": 10, "method": "mining.subscribe", "params": ["bmminer/2.0.0/Antminer S9i/14000", "ae6812eb4cd7735a302a8a9dd95cf71f"]}
+on mining subscribe [
+  'bmminer/2.0.0/Antminer S9i/14000',
+  'ae6812eb4cd7735a302a8a9dd95cf71f'
+]
+Client is asking for subscription!
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Sent command {"id":10,"result":[[["mining.set_difficulty","b4b6693b72a50c7116db18d6497cac52"],["mining.notify","ae6812eb4cd7735a302a8a9dd95cf71f"]],"08000002",4],"error":null}
+
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Received command {"id": 11, "method": "mining.authorize", "params": ["akaminer1.001", "123"]}
+on mining authorize [ 'akaminer1.001', '123' ]
+Authorizing worker akaminer1.001
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Sent command {"id":11,"result":true,"error":null}
+
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Received command {"id":12, "method":"mining.configure", "params":[["version-rolling"],{"version-rolling.mask":"00c00000","version-rolling.min-bit-count":2}]}
+Function:  Stratum error: -3,Method not found,
+Function:  (04062536-0e98-4cb5-ad69-d7d99fa7c94f) Sent command {"id":12,"error":[-3,"Method not found",null],"result":null}
+
+Function:  Error: Method not found "configure"
+    at serverForEachCommand (/Users/jk/projects/miner-pool/src/server.js:391:19)
+    at arrayEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:530:11)
+    at Function.forEach (/Users/jk/projects/miner-pool/node_modules/lodash/lodash.js:9410:14)
+    at Server.processCommands (/Users/jk/projects/miner-pool/src/server.js:331:7)
+    at Server.handleData (/Users/jk/projects/miner-pool/src/server.js:166:30)
+    at Socket.handleData (/Users/jk/projects/miner-pool/src/server.js:129:16)
+    at Socket.emit (node:events:327:20)
+    at addChunk (node:internal/streams/readable:304:12)
+    at readableAddChunk (node:internal/streams/readable:279:9)
+    at Socket.Readable.push (node:internal/streams/readable:218:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:192:23)
+Mining error:  Error: Method not found "configure"
